@@ -22,7 +22,6 @@ export const languages = [
   "Common", "Dwarvish", "Elvish", "Giant", "Gnomish", "Goblin", "Halfling", "Orc", "Abyssal", "Celestial", "Draconi", "Deep Speech", "Infernal", "Primordial", "Sylan", "Undercommon"
 ];
 
-// These are *inspired by* PHB tables but not copied verbatim
 export const personalityTraits = [
   "I speak rarely but choose my words carefully.",
   "I see the best in everyone.",

@@ -1,4 +1,3 @@
-// daos/characterDao.js
 import Character from "../models/character.js";
 
 export async function createCharacter(userId, characterData) {

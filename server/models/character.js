@@ -11,7 +11,7 @@ const characterSchema = new mongoose.Schema(
 
     name: { type: String, required: true, trim: true, index: true },
     race: { type: String, required: true },
-    class: { type: String, required: true },
+    charClass: { type: String, required: true },
 
     stats: {
       str: Number,

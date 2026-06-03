@@ -1,4 +1,3 @@
-// daos/worldDao.js
 import World from "../models/world.js";
 
 export async function createWorld(userId, worldData) {
