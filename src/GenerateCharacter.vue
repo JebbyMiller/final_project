@@ -2,13 +2,23 @@
 import { ref } from "vue";
 import { useAuthStore } from "./stores/auth.js";
 import {
-  genders,
-  alignments,
-  classes,
-  races,
+  names as nameOptions,
+  genders as genderOptions,
+  orientations as orientationOptions,
+  classes as classOptions,
+  races as raceOptions,
+  languages as languageOptions,
+  personalityTraits as personalityTraitOptions,
+  ideals as idealOptions,
+  bonds as bondOptions,
+  flaws as flawOptions,
+  alignments as alignmentOptions
+} from "./data/dndOptions.js";
+
+import {
   fillDefaults,
   rollStat,
-  rollAllStats,
+  rollAllStats
 } from "./utils/randomCharacter.js";
 
 const auth = useAuthStore();
@@ -199,14 +209,14 @@ async function reroll() {
         <div class="stats-header">
           <h3>Stats</h3>
           <button type="button" class="roll-all-btn" @click="rollAll" title="Roll all stats (4d6 drop lowest)">
-            🎲 Roll All
+            Roll All
           </button>
         </div>
         <div class="stats-grid">
           <div v-for="stat in ['str','dex','con','int','wis','cha']" :key="stat" class="stat-row">
             <span class="stat-label">{{ stat.toUpperCase() }}</span>
             <input type="number" v-model.number="stats[stat]" min="1" max="30" />
-            <button type="button" class="die-btn" @click="rollOne(stat)" :title="`Roll ${stat.toUpperCase()}`">🎲</button>
+            <button type="button" class="die-btn" @click="rollOne(stat)" :title="`Roll ${stat.toUpperCase()}`">Reroll</button>
           </div>
         </div>
       </div>
