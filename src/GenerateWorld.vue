@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import { fillWorldDefaults } from "./utils/randomWorld.js";
+
 
 const token = localStorage.getItem("token");
 
@@ -18,12 +20,17 @@ async function generate() {
   error.value = "";
   response.value = "";
 
-  const payload = {
+  const filled = fillWorldDefaults({
     name: name.value,
     geography: geography.value,
     factions: factions.value,
     history: history.value,
-  };
+  });
+
+  name.value = filled.name;
+  geography.value = filled.geography;
+  factions.value = filled.factions;
+  history.value = filled.history;
 
   try {
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/worlds`, {
@@ -32,7 +39,7 @@ async function generate() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(filled),
     });
 
     if (!res.ok) {
