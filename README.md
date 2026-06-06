@@ -4,3 +4,7 @@ I looked at my hits on Cloudflare and even though I never advertize this site or
 
 Alright, the code is finally deployed on my domain, here:
 https://cbg.jiubberish.com/characters
+
+It works with full CRUD control... if you're me... 
+
+I set it to not allow creation/deletion without being me so that I didn't rack up a massive Gemini bill, but at some point I tied character viewing to logins and now... I'm tired... I'll come back and fix this another day...
