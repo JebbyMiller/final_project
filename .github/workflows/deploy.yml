@@ -1,0 +1,61 @@
+name: Deploy App
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # ---------------------------
+      # FRONTEND BUILD
+      # ---------------------------
+      - name: Create frontend .env.production
+        run: |
+          cat <<EOF > .env.production
+          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          EOF
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Deploy frontend build
+        run: |
+          rsync -av --delete dist/ /var/www/myapp/
+
+      # ---------------------------
+      # BACKEND DEPLOY
+      # ---------------------------
+      - name: Deploy backend code
+        run: |
+          rsync -av --delete server/ /var/www/myapp/server/
+
+      - name: Create backend .env
+        run: |
+          ssh jebadeiah@192.168.0.121 << EOF
+          cd /var/www/myapp/server
+          cat <<EOT > .env
+          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          MONGO_URI=${{ secrets.MONGO_URI }}
+          EOT
+          EOF
+
+      - name: Install backend dependencies
+        run: |
+          cd /var/www/myapp/server
+          npm install --omit=dev
+
+      - name: Restart backend with PM2
+        run: |
+          pm2 delete myapp-backend || true
+          pm2 start /var/www/myapp/server/server.js --name myapp-backend
