@@ -1,0 +1,69 @@
+name: Deploy to NUC
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # -----------------------------
+      # FRONTEND BUILD
+      # -----------------------------
+      - name: Create frontend .env
+        run: |
+          cat <<EOF > .env
+          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          EOF
+
+      - name: Install frontend deps
+        run: npm install
+
+      - name: Build frontend
+        run: npm run build
+
+      # -----------------------------
+      # RSYNC FRONTEND → NUC
+      # -----------------------------
+      - name: Deploy frontend via rsync
+        run: |
+          rsync -avz --delete \
+            ./dist/ \
+            jebadeiah@192.168.0.121:/var/www/myapp/
+
+      # -----------------------------
+      # RSYNC BACKEND → NUC
+      # -----------------------------
+      - name: Deploy backend via rsync
+        run: |
+          rsync -avz --delete \
+            ./server/ \
+            jebadeiah@192.168.0.121:/var/www/myapp/server/
+
+      # -----------------------------
+      # BACKEND SETUP ON NUC
+      # -----------------------------
+      - name: Configure backend on NUC
+        run: |
+          ssh jebadeiah@192.168.0.121 << 'EOF'
+            cd /var/www/myapp/server
+
+            # Write backend .env
+            cat <<EOT > .env
+            ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            MONGO_URI=${{ secrets.MONGO_URI }}
+            EOT
+
+            # Install backend dependencies
+            npm install --omit=dev
+
+            # Restart backend service
+            sudo systemctl restart myapp-backend.service
+          EOF
