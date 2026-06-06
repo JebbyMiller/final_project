@@ -1,11 +1,14 @@
+// Take an array and return a random value from it
 export function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// Take a minimum and maximum number and return a random number between those values
 export function randomInRange(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// Take a number of dice and a number of sides/dice and return the sum of the randomly-generated dice rolls
 export function rollDice(count, sides) {
   let total = 0;
   for (let i = 0; i < count; i++) {
@@ -14,21 +17,20 @@ export function rollDice(count, sides) {
   return total;
 }
 
+// Take a race and an array of physical stats (height, height mod (rollDice()), weight (lbs), weight mod(rollDice()))
 export function rollHeightWeight(race, physicalStats) {
-  const entry = physicalStats[race];
+  const entry = physicalStats[race] || {
+    baseHeight: 69,
+    heightDice: [2, 10],
+    baseWeight: 200,
+    weightDice: [2, 4],
+  };
 
-  if (!entry) {
-    return {
-      heightInches: 60,
-      weight: 150
-    };
-  }
+  const heightMod = rollDice(entry.heightDice[0], entry.heightDice[1]);
+  const weightMod = rollDice(entry.weightDice[0], entry.weightDice[1]);
 
-  const heightMod = rollDice(entry.heightMod[0], entry.heightMod[1]);
-  const weightMod = rollDice(entry.weightMod[0], entry.weightMod[1]);
-
-  const heightInches = entry.baseHeight + heightMod;
+  const height = entry.baseHeight + heightMod;
   const weight = entry.baseWeight + heightMod * weightMod;
 
-  return { heightInches, weight };
+  return { height, weight };
 }

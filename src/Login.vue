@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useAuthStore } from "./stores/auth.js";
 
 const router = useRouter();
+const auth = useAuthStore();
 
 const email = ref("");
 const password = ref("");
@@ -28,11 +30,11 @@ async function login() {
 
     const data = await res.json();
 
-    // Save JWT
-    localStorage.setItem("token", data.token);
+    // Store token and resolve isAdmin before navigating so the navbar renders immediately
+    auth.setToken(data.token);
+    await auth.refresh();
 
-    // Redirect to home
-    router.push("/");
+    router.push("/characters");
   } catch (err) {
     console.error(err);
     error.value = "Invalid email or password.";

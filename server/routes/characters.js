@@ -1,13 +1,34 @@
 import express from "express";
-import { createCharacter, rerollCharacter, updateCharacter, getCharacter, getAllCharacters, deleteCharacter, } from "../daos/character.js";
+import {
+  createCharacter,
+  rerollCharacter,
+  updateCharacter,
+  getCharacter,
+  getAllCharacters,
+  browseCharacters,
+  deleteCharacter,
+} from "../daos/character.js";
 
 import isAuthorized from "../middleware/isAuthorized.js";
+import isAdmin from "../middleware/isAdmin.js";
+import jwtAuth from "../middleware/jwtAuth.js";
 import formatPrompt from "../middleware/formatPrompt.js";
 import { generateText } from "../services/aiClient.js";
 
 const router = express.Router();
 
-router.post("/", isAuthorized, formatPrompt("character"), async (req, res) => {
+// Browse all characters (any valid token) — no DB lookup needed for a read-only list
+router.get("/browse", jwtAuth, async (req, res) => {
+  try {
+    const characters = await browseCharacters(req.query.search || "");
+    res.json({ success: true, characters });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Generate a new character (admin only)
+router.post("/", isAdmin, formatPrompt("character"), async (req, res) => {
   try {
     const aiText = await generateText(req.prompt);
     const character = await createCharacter(req.user.id, {
@@ -21,7 +42,7 @@ router.post("/", isAuthorized, formatPrompt("character"), async (req, res) => {
   }
 });
 
-router.post("/:id/reroll", isAuthorized, formatPrompt("character"), async (req, res) => {
+router.post("/:id/reroll", isAdmin, formatPrompt("character"), async (req, res) => {
   try {
     const aiText = await generateText(req.prompt);
     const updated = await rerollCharacter(req.params.id, {

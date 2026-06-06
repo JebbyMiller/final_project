@@ -21,4 +21,6 @@ const worldSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+worldSchema.index({ name: "text", lore: "text" });
+
 export default mongoose.model("World", worldSchema);

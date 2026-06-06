@@ -28,6 +28,13 @@ export async function getAllCharacters(userId, filters = {}) {
   return Character.find({ userId, ...filters }).sort({ updatedAt: -1 });
 }
 
+export async function browseCharacters(search = "") {
+  if (search) {
+    return Character.find({ $text: { $search: search } }).sort({ updatedAt: -1 });
+  }
+  return Character.find({}).sort({ updatedAt: -1 });
+}
+
 export async function deleteCharacter(characterId, userId) {
   return Character.findOneAndDelete({ _id: characterId, userId });
 }

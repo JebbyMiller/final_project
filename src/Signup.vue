@@ -2,15 +2,21 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
-const router = useRouter();
 
+const router = useRouter();
 const username = ref("");
 const email = ref("");
 const password = ref("");
 const error = ref("");
 
 async function signup() {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   error.value = "";
+
+  if (!emailRegex.test(email.value)) {
+    error.value = "Please enter a valid email address.";
+    return;
+  }
 
   try {
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/signup`, {
@@ -24,15 +30,19 @@ async function signup() {
     });
 
     if (!res.ok) {
-      const msg = await res.text();
-      throw new Error(msg);
+      const data = await res.json();
+      throw data;
     }
-
-    alert("Signup successful! Please log in.");
-    router.push("/login");
+    const data = await res.json();
+    localStorage.setItem("token", data.token);
+    
+    router.push("/");
   } catch (err) {
-    console.error(err);
-    error.value = "Signup failed.";
+    if (err.error?.includes("E11000")) {
+      error.value = "Account already exists; please sign in to continue."
+    } else {
+      error.value = "Signup failed.";
+    }
   }
 }
 </script>

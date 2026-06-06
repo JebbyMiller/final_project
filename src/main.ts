@@ -1,7 +1,10 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import AppShell from "./AppShell.vue";
-import router from "./router.js";
+import router from "./router";
 
-createApp(AppShell)
-  .use(router)
-  .mount("#app");
+const app = createApp(AppShell);
+const pinia = createPinia();
+app.use(pinia);
+app.use(router);
+app.mount("#app");

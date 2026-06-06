@@ -11,7 +11,7 @@ export const orientations = [
 ];
 
 export const classes = [
-  "Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"
+  "Barbarian", "Bard", "Cleric", "Druid", "Fighter", "Mage", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer", "Thief", "Warlock", "Wizard"
 ];
 
 export const races = [
@@ -27,21 +27,26 @@ export const personalityTraits = [
   "I see the best in everyone.",
   "I’m always polite and respectful.",
   "I’m driven by curiosity.",
-  "I judge people harshly."
+  "I judge people harshly.",
+  "I'm incredibly charismatic",
+  "I give people the creeps",
+  "I love flirting with everyone"
 ];
 
 export const ideals = [
-  "Charity", "Freedom", "Power", "Knowledge", "Tradition", "Balance"
+  "Charity", "Freedom", "Power", "Knowledge", "Tradition", "Balance", "Justice", "Redemption", "Might"
 ];
 
 export const bonds = [
   "I owe my life to the mentor who taught me everything.",
+  "I'm seeking revenge on the person who murdered my mother",
   "I protect those who cannot protect themselves.",
   "I seek the truth about my mysterious past."
 ];
 
 export const flaws = [
   "I can’t resist a pretty face.",
+  "I'm afraid of everything",
   "I’m quick to anger.",
   "I’m overly trusting.",
   "I hoard secrets.",
@@ -64,59 +69,66 @@ export function rollStat() {
 }
 
 export const physicalStats = {
+
+  /* This array's for randomly generating stats when the user doesn't put them in for height and weight
+  // in /server/utils/random.js - rollHeightWeight() 
+  // The dice variables are arrays of # of dice and # of sides/dice.
+  // We use rollDice() in that same file, above, to generate a modifier to their base stats that we add to them
+  */ 
+
   Human: {
     baseHeight: 56,
-    heightMod: [2, 10],
+    heightDice: [2, 10],
     baseWeight: 110,
-    weightMod: [2, 4]
+    weightDice: [2, 4]
   },
   Elf: {
     baseHeight: 54,
-    heightMod: [2, 10],
+    heightDice: [2, 10],
     baseWeight: 90,
-    weightMod: [1, 4]
+    weightDice: [1, 4]
   },
   Dwarf: {
     baseHeight: 48,
-    heightMod: [2, 4],
+    heightDice: [2, 4],
     baseWeight: 130,
-    weightMod: [2, 6]
+    weightDice: [2, 6]
   },
   Halfling: {
     baseHeight: 31,
-    heightMod: [2, 4],
+    heightDice: [2, 4],
     baseWeight: 35,
-    weightMod: [1, 1]
+    weightDice: [1, 1]
   },
   Gnome: {
     baseHeight: 35,
-    heightMod: [2, 4],
+    heightDice: [2, 4],
     baseWeight: 40,
-    weightMod: [1, 1]
+    weightDice: [1, 1]
   },
   "Half-Elf": {
     baseHeight: 57,
-    heightMod: [2, 8],
+    heightDice: [2, 8],
     baseWeight: 100,
-    weightMod: [2, 4]
+    weightDice: [2, 4]
   },
   "Half-Orc": {
     baseHeight: 58,
-    heightMod: [2, 10],
+    heightDice: [2, 10],
     baseWeight: 140,
-    weightMod: [2, 6]
+    weightDice: [2, 6]
   },
   Tiefling: {
     baseHeight: 57,
-    heightMod: [2, 8],
+    heightDice: [2, 8],
     baseWeight: 110,
-    weightMod: [2, 4]
+    weightDice: [2, 4]
   },
   Dragonborn: {
     baseHeight: 66,
-    heightMod: [2, 8],
+    heightDice: [2, 8],
     baseWeight: 175,
-    weightMod: [2, 6]
+    weightDice: [2, 6]
   }
 };
 

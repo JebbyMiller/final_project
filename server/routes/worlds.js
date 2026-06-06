@@ -1,13 +1,34 @@
 import express from "express";
-import { createWorld, rerollWorld, updateWorld, getWorld, getAllWorlds, deleteWorld, } from "../daos/world.js";
+import {
+  createWorld,
+  rerollWorld,
+  updateWorld,
+  getWorld,
+  getAllWorlds,
+  browseWorlds,
+  deleteWorld,
+} from "../daos/world.js";
 
 import isAuthorized from "../middleware/isAuthorized.js";
+import isAdmin from "../middleware/isAdmin.js";
+import jwtAuth from "../middleware/jwtAuth.js";
 import formatPrompt from "../middleware/formatPrompt.js";
 import { generateText } from "../services/aiClient.js";
 
 const router = express.Router();
 
-router.post("/", isAuthorized, formatPrompt("world"), async (req, res) => {
+// Browse all worlds (any valid token) — no DB lookup needed for a read-only list
+router.get("/browse", jwtAuth, async (req, res) => {
+  try {
+    const worlds = await browseWorlds(req.query.search || "");
+    res.json({ success: true, worlds });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Generate a new world (admin only)
+router.post("/", isAdmin, formatPrompt("world"), async (req, res) => {
   try {
     const aiText = await generateText(req.prompt);
     const world = await createWorld(req.user.id, {
@@ -21,7 +42,7 @@ router.post("/", isAuthorized, formatPrompt("world"), async (req, res) => {
   }
 });
 
-router.post("/:id/reroll", isAuthorized, formatPrompt("world"), async (req, res) => {
+router.post("/:id/reroll", isAdmin, formatPrompt("world"), async (req, res) => {
   try {
     const aiText = await generateText(req.prompt);
     const updated = await rerollWorld(req.params.id, { lore: aiText });

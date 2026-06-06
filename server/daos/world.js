@@ -28,6 +28,13 @@ export async function getAllWorlds(userId, filters = {}) {
   return World.find({ userId, ...filters }).sort({ updatedAt: -1 });
 }
 
+export async function browseWorlds(search = "") {
+  if (search) {
+    return World.find({ $text: { $search: search } }).sort({ updatedAt: -1 });
+  }
+  return World.find({}).sort({ updatedAt: -1 });
+}
+
 export async function deleteWorld(worldId, userId) {
   return World.findOneAndDelete({ _id: worldId, userId });
 }

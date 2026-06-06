@@ -23,11 +23,11 @@ const characterSchema = new mongoose.Schema(
     },
 
     backgroundText: { type: String },
-
-    // Optional: store the raw AI prompt or seed data
     seedData: { type: Object },
   },
   { timestamps: true }
 );
+
+characterSchema.index({ name: "text", backgroundText: "text" });
 
 export default mongoose.model("Character", characterSchema);
