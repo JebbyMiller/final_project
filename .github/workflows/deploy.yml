@@ -27,27 +27,30 @@ jobs:
       - name: Build frontend
         run: npm run build
 
-      - name: Deploy frontend build
+      - name: Deploy frontend build (SAFE)
         run: |
-          rsync -av --delete dist/ /var/www/myapp/
+          rsync -av dist/ /var/www/myapp/ \
+            --exclude=".env" \
+            --exclude="server" \
+            --exclude="uploads"
 
       # ---------------------------
       # BACKEND DEPLOY
       # ---------------------------
-      - name: Deploy backend code
+      - name: Deploy backend code (SAFE)
         run: |
-          rsync -av --delete server/ /var/www/myapp/server/
+          rsync -av server/ /var/www/myapp/server/ \
+            --exclude=".env"
 
-      - name: Create backend .env
+      - name: Ensure backend .env exists (SAFE)
         run: |
-          ssh jebadeiah@192.168.0.121 << EOF
+          ssh jebadeiah@192.168.0.121 << 'EOF'
           cd /var/www/myapp/server
-          cat <<EOT > .env
-          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
-          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          MONGO_URI=${{ secrets.MONGO_URI }}
-          EOT
+          touch .env
+          grep -qxF "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" .env || echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> .env
+          grep -qxF "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" .env || echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+          grep -qxF "JWT_SECRET=${{ secrets.JWT_SECRET }}" .env || echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          grep -qxF "MONGO_URI=${{ secrets.MONGO_URI }}" .env || echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
           EOF
 
       - name: Install backend dependencies
@@ -57,5 +60,4 @@ jobs:
 
       - name: Restart backend with PM2
         run: |
-          pm2 delete myapp-backend || true
-          pm2 start /var/www/myapp/server/server.js --name myapp-backend
+          pm2 restart myapp-backend || pm2 start /var/www/myapp/server/server.js --name myapp-backend
